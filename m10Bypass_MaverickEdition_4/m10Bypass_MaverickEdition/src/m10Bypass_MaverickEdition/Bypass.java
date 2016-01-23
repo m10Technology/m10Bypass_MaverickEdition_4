@@ -56,25 +56,48 @@ public class Bypass implements Runnable{
 		mClient.authenticate(password);
 		System.out.println("Connected");
 		myParent.setStatus("Connected");
-		//CHANGE THIS SO IT WILL TURN ALL THE THINGS ON NOT JUST MAC!!!!!!!!
-		//myProxy.disableProxy();
+
+		if(NetworkProxy.checkOS()==1){
+			myProxy.enableProxyLinux();
+		}else if(NetworkProxy.checkOS()==2){
+			myProxy.enableProxyMac();
+		}else if(NetworkProxy.checkOS()==3){
+			myProxy.enableProxyWindows();
+		}
 		
 		socks = new ProxyServer(new ServerAuthenticatorNone(), mClient);
 		socks.start(8080);
+		
+		
+		
 		}
 		catch(Exception e){
 			e.printStackTrace();
+			runBypass(uName,passWd);
 		}
 	}
 	
 	public void stopBypass(){
 
 		try{
+			if(NetworkProxy.checkOS()==1){
+				myProxy.disableProxyLinux();
+			}else if(NetworkProxy.checkOS()==2){
+				myProxy.disableProxyMac();
+			}else if(NetworkProxy.checkOS()==3){
+				myProxy.disableProxyWindows();
+			}
+			socks.stop();
 			mClient.disconnect();
 			mClient.exit();
 			mTransport.close();
-			socks.stop();
-
+			
+			
+			mClient = null;
+			mTransport = null;
+			socks = null;
+			con = null;
+			
 		}catch(Exception e){
 			e.printStackTrace();
 		}

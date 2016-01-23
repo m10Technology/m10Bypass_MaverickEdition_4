@@ -81,7 +81,8 @@ public class MainWindowGUI {
 				   
 				   mBypass = new Bypass(username,password,mProxy,me);
 			       Thread bypassThread = new Thread(mBypass);
-				     
+
+				   
 			         if(ev.getStateChange()==ItemEvent.SELECTED){
 				        System.out.println("Starting Bypass..");
 				        setStatus("Starting Bypass");
