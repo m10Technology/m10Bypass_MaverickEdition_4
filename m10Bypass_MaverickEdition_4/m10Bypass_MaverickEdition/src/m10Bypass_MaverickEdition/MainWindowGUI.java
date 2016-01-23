@@ -33,6 +33,7 @@ public class MainWindowGUI {
 	private static JLabel lblStatus;
 	private static boolean isRunning = false;
 	private static ConnectionCheck checker;
+	private MainWindowGUI me = this;
 	/**
 	 * Launch the application.
 	 */
@@ -78,7 +79,7 @@ public class MainWindowGUI {
 				   String username = mCreds.getUsername();
 				   String password = mCreds.getPassword();	 
 				   
-				   mBypass = new Bypass(username,password,mProxy);
+				   mBypass = new Bypass(username,password,mProxy,me);
 			       Thread bypassThread = new Thread(mBypass);
 				     
 			         if(ev.getStateChange()==ItemEvent.SELECTED){

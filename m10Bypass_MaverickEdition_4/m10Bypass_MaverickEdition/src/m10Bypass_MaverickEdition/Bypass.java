@@ -1,5 +1,6 @@
 package m10Bypass_MaverickEdition;
 
+import java.awt.event.ItemListener;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -8,6 +9,7 @@ import com.sshtools.ssh.PasswordAuthentication;
 import com.sshtools.ssh.SshClient;
 import com.sshtools.ssh.SshConnector;
 import com.sshtools.ssh.SshTransport;
+
 import socks.ProxyServer;
 import socks.server.ServerAuthenticatorNone;
 
@@ -21,12 +23,13 @@ public class Bypass implements Runnable{
 	private static SshTransport mTransport;
 	private static ProxyServer socks;
 	private static ConnectionCheck checker;
+	private static MainWindowGUI myParent;
 	
-	public Bypass(String username,String password,NetworkProxy mProxy){
+	public Bypass(String username,String password,NetworkProxy mProxy,MainWindowGUI p){
 		name = username;
 		pass = password;
 		myProxy = mProxy;
-
+		myParent = p;
 	}
 
 	public void run(){
@@ -52,7 +55,7 @@ public class Bypass implements Runnable{
 		password.setPassword(passWd);
 		mClient.authenticate(password);
 		System.out.println("Connected");
-		
+		myParent.setStatus("Connected");
 		//CHANGE THIS SO IT WILL TURN ALL THE THINGS ON NOT JUST MAC!!!!!!!!
 		//myProxy.disableProxy();
 		
