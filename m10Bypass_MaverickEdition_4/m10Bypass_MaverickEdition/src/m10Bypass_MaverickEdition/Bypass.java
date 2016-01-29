@@ -64,7 +64,6 @@ public class Bypass implements Runnable{
 		}else if(NetworkProxy.checkOS()==3){
 			myProxy.enableProxyWindows();
 		}
-		
 		socks = new ProxyServer(new ServerAuthenticatorNone(), mClient);
 		socks.start(8080);
 		
@@ -78,7 +77,7 @@ public class Bypass implements Runnable{
 	}
 	
 	public void stopBypass(){
-
+		System.out.println("Killing Bypass");
 		try{
 			if(NetworkProxy.checkOS()==1){
 				myProxy.disableProxyLinux();
@@ -97,6 +96,8 @@ public class Bypass implements Runnable{
 			mTransport = null;
 			socks = null;
 			con = null;
+			System.out.println("Bypass Stopped");
+
 			
 		}catch(Exception e){
 			e.printStackTrace();
