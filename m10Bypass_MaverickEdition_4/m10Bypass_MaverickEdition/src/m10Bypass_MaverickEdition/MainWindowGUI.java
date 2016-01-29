@@ -32,8 +32,7 @@ public class MainWindowGUI {
 	private Bypass mBypass;
 	private static JLabel lblStatus;
 	private static boolean isRunning = false;
-	private static ConnectionCheck checker;
-	private MainWindowGUI me = this;
+	private MainWindowGUI jarod = this;
 	/**
 	 * Launch the application.
 	 */
@@ -73,31 +72,24 @@ public class MainWindowGUI {
 		
 		JToggleButton bypassButton = new JToggleButton("Bypass");
 		bypassButton.addItemListener(new ItemListener() {
-			   public void itemStateChanged(ItemEvent ev) {				     
-				   
-				   CredManager mCreds = new CredManager();
-				   String username = mCreds.getUsername();
-				   String password = mCreds.getPassword();	 
-				   
-				   mBypass = new Bypass(username,password,mProxy,me);
-			       Thread bypassThread = new Thread(mBypass);
-
-				   
-			         if(ev.getStateChange()==ItemEvent.SELECTED){
+			   public void itemStateChanged(ItemEvent ev) {
+				      if(ev.getStateChange()==ItemEvent.SELECTED){
 				        System.out.println("Starting Bypass..");
 				        setStatus("Starting Bypass");
-				        checker = new ConnectionCheck(mBypass,username,password);
-				        Thread checkThread = new Thread(checker);
-				        checkThread.start();
+				        
+				        CredManager mCreds = new CredManager();
+				        String username = mCreds.getUsername();
+				        String password = mCreds.getPassword();
+				        mBypass = new Bypass(username,password,mProxy,jarod);
+				        Thread bypassThread = new Thread(mBypass);
 				        bypassThread.start();
 
 
 
 				      } else if(ev.getStateChange()==ItemEvent.DESELECTED){
-				    	checker.stopChecking();
+				    	mBypass.stopBypass();
 				        System.out.println("Waiting...");
 				        setStatus("Waiting");
-				        mBypass.stopBypass();
 				      }
 				   }
 				});
@@ -123,7 +115,6 @@ public class MainWindowGUI {
 			return 3;
 		}
 		return 0;
-		
 	}
 	
 	public static void setStatus(String input){
