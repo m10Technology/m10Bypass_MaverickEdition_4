@@ -3,14 +3,26 @@ package m10Bypass_MaverickEdition;
 import java.awt.Robot;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URL;
 import java.util.prefs.*;
+import org.lantern.win.*;
+
 public class NetworkProxy {
+	
+	private CredManager mCreds;
+	//private WinProxy winProxy;
+	public NetworkProxy(CredManager c){
+		mCreds = c;
+		//winProxy = new WinProxy();
+	}
 	
 	
 	//Linux Proxy Commands
 	public void enableProxyLinux(){
-		String setHost = "gsettings set org.gnome.system.proxy.socks host \"127.0.0.1\"";
-	    String setPort = "gsettings set org.gnome.system.proxy.socks port 8080";
+		String setHost = "gsettings set org.gnome.system.proxy.socks host \""+mCreds.getBypassHost()+"\"";
+	    String setPort = "gsettings set org.gnome.system.proxy.socks port "+mCreds.getBypassPort();
 		String setMode = "gsettings set org.gnome.system.proxy mode \"manual\"";
 		try{
 			Process proc = Runtime.getRuntime().exec(setHost);
@@ -35,7 +47,8 @@ public class NetworkProxy {
 
 	//OSX Proxy Commands
 	public void enableProxyMac(){
-		String setProxySettings = "networksetup -setsocksfirewallproxy Ethernet 127.0.0.1 8080 off";
+
+		String setProxySettings = "networksetup -setsocksfirewallproxy Wi-Fi "+mCreds.getBypassHost() +" "+ mCreds.getBypassPort()+" off";
 		String setProxyOn = "networksetup -setsocksfirewallproxystate on";
 		
 		try{
@@ -48,7 +61,7 @@ public class NetworkProxy {
 		}
 	}
 	public void disableProxyMac(){
-		String setProxyOff = "networksetup -setsocksfirewallproxystate Ethernet off";
+		String setProxyOff = "networksetup -setsocksfirewallproxystate Wi-Fi off";
 		try{
 		Process proc = Runtime.getRuntime().exec(setProxyOff);
 		}
@@ -60,52 +73,49 @@ public class NetworkProxy {
 	
 	//Windows Proxy Commands
 	public void enableProxyWindows(){
-		try{
-			Runtime rt = Runtime.getRuntime();
-			rt.exec("cmd.exe /c start enable.vbs");
-			rt.exec("cmd.exe /c start inetcpl.cpl ,4");
-			refresh();
-			
-		}
-		catch(Exception e){
-			e.printStackTrace();
-		}
+		String myProxy = "socks=localhost:8080";
+	//	winProxy.proxy(myProxy);		
 	}
+	public void disableProxyWindows(){
+	//	winProxy.unproxy();
+	}
+	
+	
 	public static void refresh()
 	{	
 		try{
 			Robot robot = new Robot();
 			Thread.sleep(500);
 			robot.keyPress(KeyEvent.VK_ALT);
+			Thread.sleep(150);
 			robot.keyPress(KeyEvent.VK_L);
+			Thread.sleep(150);
 			robot.keyRelease(KeyEvent.VK_ALT);
+			Thread.sleep(150);
 			robot.keyRelease(KeyEvent.VK_L);
 			Thread.sleep(500);
 			robot.keyPress(KeyEvent.VK_ALT);
+			Thread.sleep(150);
 			robot.keyPress(KeyEvent.VK_F4);
+			Thread.sleep(150);
 			robot.keyRelease(KeyEvent.VK_ALT);
+			Thread.sleep(150);
 			robot.keyRelease(KeyEvent.VK_F4);
+			Thread.sleep(150);
 			robot.keyPress(KeyEvent.VK_ALT);
+			Thread.sleep(150);
 			robot.keyPress(KeyEvent.VK_F4);
+			Thread.sleep(150);
 			robot.keyRelease(KeyEvent.VK_ALT);
+			Thread.sleep(150);
 			robot.keyRelease(KeyEvent.VK_F4);
+			Thread.sleep(150);
 		}
 		catch(Exception e){
 			e.printStackTrace();
 		}
 	}
-	public void disableProxyWindows(){
-		try{
-		Runtime rt = Runtime.getRuntime();
-		rt.exec("cmd.exe /c start disable.vbs");
-		rt.exec("cmd.exe /c start inetcpl.cpl ,4");
-		refresh();
-		}
-		catch(Exception e){
-			e.printStackTrace();
-		}
-	}
-	
+
 	
 	
 	
@@ -141,7 +151,7 @@ public class NetworkProxy {
 		else if(myOS.equals("Mac OS X")){
 			return 2;
 		}
-		else if(myOS.contains("Windows")){
+		else if(myOS.contains("indows")){
 			return 3;
 		}
 		return 0;

@@ -2,6 +2,8 @@ package m10Bypass_MaverickEdition;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.UnknownHostException;
@@ -9,12 +11,13 @@ import java.net.UnknownHostException;
 public class ConnectionCheck implements Runnable {
 
 	
-	private static Bypass myParent;
+	private static MainWindowGUI myParent;
 	private static String uName;
 	private static String passWd;
-	private static boolean isRunning = true;
+	public boolean isRunning = true;
+	private String previousResult = "";
 	
-	public ConnectionCheck(Bypass mParent, String name,String pass){
+	public ConnectionCheck(MainWindowGUI mParent, String name,String pass){
 		uName = name;
 		passWd = pass;
 		myParent = mParent;
@@ -22,47 +25,46 @@ public class ConnectionCheck implements Runnable {
 	
 	@Override
 	public void run() {
-		 isRunning = true;
+		int round = 0;
+		try{Thread.sleep(2500);}catch(Exception e){}
 		 while(isRunning){
+     		try{Thread.sleep(85);}catch(Exception e){e.printStackTrace();}
+			 System.out.println("Going Round " + round);
 	        	if(checkConnection()){
-	        		try{
-	        		Thread.sleep(500);
-	        		}catch(Exception e){e.printStackTrace();}
-
+	        		if(previousResult.equals("Bad")){
+	        			myParent.makeNewBypass();
+	        		}
+	        		System.out.println("Good");
+	        		previousResult = "Good";
 	        	}
 	        	else{
-			        System.out.println("Connection Lost, Restarting");
-			        //setStatus("Connection Lost, Restarting");
-	        		myParent.stopBypass();
-	        		try{
-	        			Thread.sleep(2000);
-	        		}catch(Exception e){e.printStackTrace();}
-	        		myParent.runBypass(uName,passWd);
-	        		
+	        		//System.out.println("Bad");
+	        		myParent.setStatus("Waiting for network...");
+	        		myParent.mBypass.stopBypass();
+	        		myParent.bypassThread = null;
+	        		myParent.makeNewBypass();
+	        		previousResult = "Bad";
 	        	}
+	        	round++;
 	        }
-			
-		
+					
 	}
 
 	
-	public void stopChecking(){
-		isRunning = false;
-	}
+
 
 	private static boolean checkConnection(){
-		try{
-		InetAddress mAddress = InetAddress.getByName("www.m10cpu.com");
-		if(mAddress.isReachable(2000)){
-			return true;
-		}
-		return false;
-		}
-		catch(Exception e){
-			e.printStackTrace();
-		}
-		return false;
-		
+		  Socket sock = new Socket();
+		    InetSocketAddress addr = new InetSocketAddress("www.m10cpu.com",80);
+		    try {
+		        sock.connect(addr,3000);
+		        return true;
+		    } catch (IOException e) {
+		        return false;
+		    } finally {
+		        try {sock.close();}
+		        catch (IOException e) {}
+		    }
 	}
 	
 	
